@@ -43,13 +43,16 @@ export class EWMDHiMD extends HiMDFullService {
             await unmountAll(vendorId!, deviceId!);
         }
 
-        webUsbDevice.open();
+        await webUsbDevice.open();
+        let detachedKernelDriver = false;
         try{
             webUsbDevice.detachKernelDriver(0);
+            detachedKernelDriver = true;
         }catch(ex){
             console.log("Couldn't detach the kernel driver. Expected on Windows.");
         }
-        await webUsbDevice.open();
+        // Only reopen if the kernel driver was actually detached.
+        if(detachedKernelDriver) await webUsbDevice.open();
         if(process.platform === 'linux') {
             // TODO: Check windows.
             // Resetting on MacOS reattaches the system driver.
