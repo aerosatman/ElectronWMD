@@ -44,16 +44,11 @@ export class EWMDHiMD extends HiMDFullService {
         }
 
         await webUsbDevice.open();
-        let detachedKernelDriver = false;
         try{
-            webUsbDevice.detachKernelDriver(0);
-            detachedKernelDriver = true;
+            await webUsbDevice.detachKernelDriver(0);
         }catch(ex){
             console.log("Couldn't detach the kernel driver. Expected on Windows.");
         }
-        // Only reopen if the kernel driver was actually detached.
-        // macOS throws if an already-open device is opened again, so only reopen elsewhere.
-        if(detachedKernelDriver && process.platform !== 'darwin') await webUsbDevice.open();
         
         if(process.platform === 'linux') {
             // TODO: Check windows.
